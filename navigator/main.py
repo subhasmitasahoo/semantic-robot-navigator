@@ -2,6 +2,7 @@
 
 from navigator.world import build_mall_world
 from navigator.semantics import match_goal
+from navigator.semantics import explain_choice
 from navigator.planner import astar
 from navigator.visualize import animate_path
 
@@ -13,24 +14,38 @@ def navigate(m, start, query, blocked_cell=None, block_after_steps=2,
     steps of being blocked (simulating someone walking through and leaving).
     max_wait: give up if the robot waits this many steps with no path."""
 
-    matches = match_goal(query, m)
-    print(f"Goal: '{query}'")
-    print("Ranked matches:", matches)
+    # ===== Keyword-based matching (START)=====
+    # matches = match_goal(query, m)
+    # print(f"Goal: '{query}'")
+    # print("Ranked matches:", matches)
 
-    if not matches:
+    # if not matches:
+    #     print("No matching object found for this goal.")
+    #     return
+
+    # target = None
+    # for label, score in matches:
+    #     if astar(m, start, m.objects[label]):
+    #         target = m.objects[label]
+    #         print(f"-> Chose '{label}' (score={score:.2f})")
+    #         break
+
+    # if target is None:
+    #     print("No reachable object matches this goal.")
+    #     return
+    # ===== Keyword-based matching (END)=====
+
+    # ===== Embedding-based matching (START)=====
+    label, score, confident = explain_choice(query, m)
+    if label is None:
         print("No matching object found for this goal.")
         return
 
-    target = None
-    for label, score in matches:
-        if astar(m, start, m.objects[label]):
-            target = m.objects[label]
-            print(f"-> Chose '{label}' (score={score:.2f})")
-            break
-
-    if target is None:
-        print("No reachable object matches this goal.")
+    target = m.objects[label]
+    if astar(m, start, target) is None:
+        print(f"'{label}' is unreachable from {start}.")
         return
+    # ===== Embedding-based matching (END)=====
 
     current = start
     full_journey = [current]
@@ -78,10 +93,19 @@ def navigate(m, start, query, blocked_cell=None, block_after_steps=2,
 
 
 # python3 -m navigator.main
-if __name__ == "__main__":
-    m = build_mall_world()
-    start = (1, 1)
+# if __name__ == "__main__":
+#     m = build_mall_world()
+#     start = (1, 1)
 
-    navigate(m, start, "I need to use the bathroom",
-             blocked_cell=(3, 4), block_after_steps=2,
-             unblock_after_steps=3, max_wait=10)
+#     navigate(m, start, "I need to use the bathroom",
+#              blocked_cell=(3, 4), block_after_steps=2,
+#              unblock_after_steps=3, max_wait=10)
+
+if __name__ == "__main__":
+
+    for q in ["I need to use the bathroom", "I'm thirsty", "I need caffeine"]:
+        m = build_mall_world()
+        start = (1, 1)
+        print("="*40)
+        navigate(m, start, q, blocked_cell=(3, 4), block_after_steps=2,
+                 unblock_after_steps=3, max_wait=10)

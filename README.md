@@ -41,14 +41,23 @@ and disappear after a few steps. If A* returns no path, the robot
 waits in place and retries, giving up only after `max_wait` failed
 attempts.
 
+### Step 11-12: Embedding-based semantics + confidence (done)
+`navigator/semantics.py`:
+- `OBJECT_DESCRIPTIONS` — natural-language description per object.
+- `match_goal_embedding()` — ranks objects by cosine similarity
+  (via `sentence-transformers`, model `all-MiniLM-L6-v2`) between the
+  query and each object's description.
+- `explain_choice()` — picks the top match, prints a human-readable
+  explanation, and flags low-confidence picks (score < `CONFIDENCE_THRESHOLD = 0.3`).
+
+`navigator/main.py` — `navigate()` now uses `explain_choice()` to pick
+a target and reports confidence before planning/navigating.
+
 #### Try it
 ```bash
 python3 -m navigator.main
 ```
 
 ### What's next
-We've now covered the core robotics loop: map -> plan -> navigate -> detect change -> replan/wait -> recover. The remaining items from the original idea are mostly on the **semantic** side:
-- **Embeddings** (`sentence-transformers`): replace hand-written `OBJECT_KEYWORDS` with real semantic similarity — handles queries like "I'm thirsty" or "somewhere quiet to sit" without manual keyword lists.
-- **Confidence/explanation**: surface *why* a target was picked ("chose restroom — matched 'bathroom', score 0.20").
 - **Eval set**: a list of `(query, expected_label)` pairs + a script that measures match accuracy — this is where your eval/ranking background really fits.
 Given your background, I'd guess **embeddings + eval set together** would be the most interesting next pair — replace the keyword matcher, then measure how much better (or differently-wrong) it is on a small benchmark. Want to go that direction, or pick something else?
