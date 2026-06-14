@@ -80,9 +80,78 @@ python3 -m navigator.main
 python3 -m navigator.eval
 ```
 
-## Next stage: Reinforcement Learning (in progress)
+## Next stage: Reinforcement Learning
 
-The `rl/` package will hold a reinforcement-learning track: train an
-agent to navigate `GridMap` worlds (starting with `build_mall_world()`),
-and compare it against the A* planner on success rate and path
-efficiency. Built step by step.
+Instead of telling the robot the rules (like A* does), here we let the
+robot learn by trial and error: try an action, see what happens, get a
+reward, and slowly get better over many attempts.
+
+### RL Step 1: Environment (done)
+`rl/env.py` — `GridNavEnv` wraps `GridMap` so an agent can interact
+with it in a simple, standard way:
+- `reset()` — puts the robot back at the start.
+- `step(action)` — moves the robot (action = 0/1/2/3 for up/down/left/right)
+  and returns `(new_position, reward, done, info)`.
+- Rewards: `+10` for reaching the goal, `-1` for every normal step
+  (including bumping into a wall and staying still). Small negative
+  rewards per step encourage the robot to find short paths — every
+  step "costs" something.
+
+### RL Step 2: Q-learning agent (done)
+`rl/q_learning.py` — `QLearningAgent` keeps a table of
+"how good is it to take this action from this position?" called the
+Q-table. Two key ideas:
+- **Explore vs exploit**: most of the time the agent picks its
+  current best-known action, but sometimes (`epsilon` chance) it picks
+  a random action instead, so it keeps discovering new routes instead
+  of getting stuck on an early, mediocre one.
+- **Learning update**: after each step, the agent nudges its Q-table
+  entry toward "reward I just got, plus the best value I expect from
+  here onward". Repeated many times, these numbers settle into good
+  estimates of "how good is this move, really".
+
+### RL Step 3: Training loop + greedy run (done)
+`rl/train.py`:
+- `train()` runs many episodes (attempts). Each episode: reset, then
+  repeatedly choose an action, take it, and learn from the result,
+  until the robot reaches the goal or runs out of steps. Prints the
+  average reward every 50 episodes so you can watch it improve.
+- `run_greedy()` runs the trained agent with no randomness — always
+  picking its best-known action — and returns the path it takes.
+- The result is animated using the same `animate_path()` from the A*
+  track.
+
+#### Try it
+```bash
+python3 -m rl.train
+```
+
+#### What we found
+- Goal = `food_court` (2 steps away): the agent learned the optimal
+  2-step path almost immediately — too easy to be interesting.
+- Goal = `restroom` (9 steps away, same target used in the A* demo):
+  - Early on, the average reward per episode was very negative
+    (around -32) — the robot was mostly bumping into walls and
+    wandering.
+  - Within ~100 episodes, it found a good route, and it eventually
+    settled on the **optimal 9-step path** — the same length as A*'s
+    path (a different route, but equally short).
+
+#### Important limitation found
+This agent only learned a path to **one specific goal** (`restroom`).
+The "state" it learns from is just its `(x, y)` position — it has no
+idea *what* the goal is. If you change the goal without retraining,
+the learned table is useless for the new goal.
+
+This is the opposite tradeoff from A*: A* re-plans instantly for any
+new goal but does a fresh search every time; Q-learning takes a while
+to learn but then "just knows" the answer — for the one goal it was
+trained on.
+
+### What's next (ideas, not yet built)
+- **Compare RL vs A*** side by side on path length / success rate for
+  several goals (`rl/evaluate.py`).
+- **Multi-goal RL**: include the goal in the state, so one trained
+  agent can handle any goal — closer to how A* behaves.
+- **Partial observability**: the robot only "sees" nearby cells, not
+  the whole map — closer to a real robot with limited sensors.

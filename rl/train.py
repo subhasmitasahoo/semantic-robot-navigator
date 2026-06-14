@@ -20,7 +20,10 @@ def train():
     # Build the world and define start/goal for this training run.
     m = build_mall_world()
     start = (1, 1)
-    goal = m.objects["food_court"]  # reachable from (1,1)
+    # Easy goal.
+    # goal = m.objects["food_court"]  # reachable from (1,1)
+    # Difficult goal.
+    goal = m.objects["restroom"]
 
     # env: handles "what happens when the agent takes an action".
     # agent: handles "what action to take, and how to learn from results".
