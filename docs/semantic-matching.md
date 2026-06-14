@@ -37,8 +37,8 @@ OBJECT_DESCRIPTIONS = {
 }
 ```
 
-Richer descriptions for `food_court` and `info_desk` were added after the
-first eval run — see analysis below.
+Richer descriptions for `food_court` and `info_desk` were added after
+iteration 1 — see [iteration 2 changes](#iteration-2-richer-descriptions) below.
 
 ## Eval set + matcher comparison (Step 13)
 
@@ -52,9 +52,11 @@ python3 -m navigator.eval
 
 ## Interesting analysis
 
-Full latest run: [`data/test/matcher_eval_results.txt`](../data/test/matcher_eval_results.txt)
+Eval runs are saved per iteration:
+- [`data/test/iteration_1.txt`](../data/test/iteration_1.txt) — baseline (original descriptions)
+- [`data/test/iteration_2.txt`](../data/test/iteration_2.txt) — after richer descriptions
 
-### Baseline (original descriptions)
+### Iteration 1 (original descriptions)
 
 | Matcher | Accuracy |
 |---------|----------|
@@ -64,10 +66,19 @@ Full latest run: [`data/test/matcher_eval_results.txt`](../data/test/matcher_eva
 Keyword matching won on this tiny benchmark. Embedding failures included
 `I'm thirsty` → restroom, and `info_desk` queries (0/3 correct).
 
-### After richer descriptions
+### Iteration 2: richer descriptions
 
-| Matcher | Accuracy | Δ |
-|---------|----------|---|
+**Change:** [commit ed3787b](https://github.com/subhasmitasahoo/semantic-robot-navigator/commit/ed3787b) — expanded `OBJECT_DESCRIPTIONS` in `navigator/semantics.py`:
+
+| Object | Before | After |
+|--------|--------|-------|
+| `food_court` | "…coffee, and drinks" | added "water, and something to eat or drink when hungry or thirsty" |
+| `info_desk` | "…staff can help with directions" | added "/ help desk", "answer questions", "help if you are lost" |
+
+(No PR — changes landed directly on `main`.)
+
+| Matcher | Accuracy | Δ vs iter 1 |
+|---------|----------|-------------|
 | Keyword | 81.25% (13/16) | — |
 | Embedding | **75.00%** (12/16) | **+6.25 pp** |
 
