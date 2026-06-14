@@ -68,6 +68,12 @@ Richer object descriptions improved embedding accuracy from 68.75% → 100% (see
 
 → **[Semantic Matching — full write-up + analysis](docs/semantic-matching.md)**
 
+### Step 15: Visualization polish (done)
+`navigator/visualize.py` — `animate_path()` now accepts a `subtitle`,
+rendered below the map. `navigator/main.py` builds this subtitle from
+`explain_choice()`'s output: chosen target, its description, and the
+confidence score (flagged as "confident" or "low-confidence guess").
+
 #### Try it
 ```bash
 python3 -m navigator.main

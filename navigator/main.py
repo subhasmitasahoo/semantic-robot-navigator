@@ -2,7 +2,7 @@
 
 from navigator.world import build_mall_world
 from navigator.semantics import match_goal
-from navigator.semantics import explain_choice
+from navigator.semantics import explain_choice, OBJECT_DESCRIPTIONS
 from navigator.planner import astar
 from navigator.visualize import animate_path
 
@@ -47,6 +47,10 @@ def navigate(m, start, query, blocked_cell=None, block_after_steps=2,
         return
     # ===== Embedding-based matching (END)=====
 
+    confidence_word = "confident" if confident else "low-confidence guess"
+    subtitle = (f"Target: {label}  |  Match: \"{OBJECT_DESCRIPTIONS[label]}\"  |  "
+                 f"Confidence: {score:.2f} ({confidence_word})")
+
     current = start
     full_journey = [current]
     step = 0
@@ -89,7 +93,8 @@ def navigate(m, start, query, blocked_cell=None, block_after_steps=2,
     if current == target:
         print(f"Arrived at {current} in {len(full_journey) - 1} steps (incl. waits)")
 
-    animate_path(m, full_journey, title=f"Goal: '{query}' (with replanning + waiting)")
+    animate_path(m, full_journey, title=f"Goal: '{query}' (with replanning + waiting)",
+                  subtitle=subtitle)
 
 
 # python3 -m navigator.main

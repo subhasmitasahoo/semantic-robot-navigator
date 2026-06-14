@@ -37,7 +37,7 @@ def plot_map(m: GridMap, path=None, robot_pos=None, title="Grid Map"):
 
 
 
-def animate_path(m: GridMap, path, title="Robot Navigation"):
+def animate_path(m: GridMap, path, title="Robot Navigation", subtitle=None):
     fig, ax = plt.subplots(figsize=(m.width / 2, m.height / 2))
 
     grid = np.array(m.grid)
@@ -57,6 +57,8 @@ def animate_path(m: GridMap, path, title="Robot Navigation"):
     robot_dot, = ax.plot(xs[0], ys[0], "s", color="tab:green", markersize=12)
 
     ax.set_title(title)
+    if subtitle:
+        fig.text(0.5, 0.01, subtitle, ha="center", fontsize=9, color="dimgray")
     ax.set_xticks(range(m.width))
     ax.set_yticks(range(m.height))
     ax.grid(True, color="lightgray", linewidth=0.5)
