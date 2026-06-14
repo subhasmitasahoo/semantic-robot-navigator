@@ -1,0 +1,45 @@
+python3 -m navigator.eval
+
+--- Keyword matcher ---
+[OK ] 'I need caffeine' -> predicted=food_court (score=0.12), expected=food_court
+[OK ] 'where can I get food' -> predicted=food_court (score=0.12), expected=food_court
+[OK ] 'I'm hungry' -> predicted=food_court (score=0.12), expected=food_court
+[FAIL] 'I'm thirsty' -> predicted=None (score=0.00), expected=food_court
+[OK ] 'where can I buy a shirt' -> predicted=clothing_store (score=0.33), expected=clothing_store
+[OK ] 'I need new shoes' -> predicted=clothing_store (score=0.17), expected=clothing_store
+[OK ] 'I want to go shopping' -> predicted=clothing_store (score=0.17), expected=clothing_store
+[OK ] 'I need to use the bathroom' -> predicted=restroom (score=0.20), expected=restroom
+[OK ] 'where's the toilet' -> predicted=restroom (score=0.20), expected=restroom
+[FAIL] 'I need to wash my hands' -> predicted=None (score=0.00), expected=restroom
+[OK ] 'I have a question' -> predicted=info_desk (score=0.17), expected=info_desk
+[OK ] 'can someone give me directions' -> predicted=info_desk (score=0.17), expected=info_desk
+[FAIL] 'I'm lost' -> predicted=None (score=0.00), expected=info_desk
+[OK ] 'I want to leave' -> predicted=exit (score=0.17), expected=exit
+[OK ] 'how do I get outside' -> predicted=exit (score=0.17), expected=exit
+[OK ] 'where's the way out' -> predicted=exit (score=0.17), expected=exit
+
+Keyword matcher accuracy: 13/16 = 81.25%
+
+--- Embedding matcher ---
+[OK ] 'I need caffeine' -> predicted=food_court (score=0.27), expected=food_court
+[OK ] 'where can I get food' -> predicted=food_court (score=0.49), expected=food_court
+[OK ] 'I'm hungry' -> predicted=food_court (score=0.36), expected=food_court
+[OK ] 'I'm thirsty' -> predicted=food_court (score=0.26), expected=food_court
+[OK ] 'where can I buy a shirt' -> predicted=clothing_store (score=0.62), expected=clothing_store
+[OK ] 'I need new shoes' -> predicted=clothing_store (score=0.38), expected=clothing_store
+[OK ] 'I want to go shopping' -> predicted=clothing_store (score=0.51), expected=clothing_store
+[OK ] 'I need to use the bathroom' -> predicted=restroom (score=0.60), expected=restroom
+[OK ] 'where's the toilet' -> predicted=restroom (score=0.59), expected=restroom
+[OK ] 'I need to wash my hands' -> predicted=restroom (score=0.57), expected=restroom
+[FAIL] 'I have a question' -> predicted=food_court (score=0.13), expected=info_desk
+[FAIL] 'can someone give me directions' -> predicted=exit (score=0.08), expected=info_desk
+[FAIL] 'I'm lost' -> predicted=restroom (score=0.18), expected=info_desk
+[OK ] 'I want to leave' -> predicted=exit (score=0.27), expected=exit
+[OK ] 'how do I get outside' -> predicted=exit (score=0.47), expected=exit
+[OK ] 'where's the way out' -> predicted=exit (score=0.40), expected=exit
+
+Embedding matcher accuracy: 13/16 = 81.25%
+
+=== Summary ===
+Keyword:   81.25%
+Embedding: 81.25%

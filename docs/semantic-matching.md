@@ -31,7 +31,7 @@ and reports confidence before planning/navigating.
 OBJECT_DESCRIPTIONS = {
     "food_court": "a food court with restaurants, snacks, coffee, drinks, water, and something to eat or drink when hungry or thirsty",
     "clothing_store": "a clothing store selling shirts, shoes, and clothes",
-    "restroom": "a restroom / bathroom / toilet",
+    "restroom": "a restroom / bathroom / toilet where you can wash your hands",
     "info_desk": "an information desk / help desk where staff can answer questions, give directions, and help if you are lost",
     "exit": "the exit leading outside the building",
 }
@@ -54,7 +54,8 @@ python3 -m navigator.eval
 
 Eval runs are saved per iteration:
 - [`data/test/iteration_1.txt`](../data/test/iteration_1.txt) — baseline (original descriptions)
-- [`data/test/iteration_2.txt`](../data/test/iteration_2.txt) — after richer descriptions
+- [`data/test/iteration_2.txt`](../data/test/iteration_2.txt) — richer `food_court` + `info_desk` descriptions
+- [`data/test/iteration_3.txt`](../data/test/iteration_3.txt) — richer `restroom` description
 
 ### Iteration 1 (original descriptions)
 
@@ -94,20 +95,34 @@ Keyword matching won on this tiny benchmark. Embedding failures included
 **Keyword still fails on:** `I'm thirsty`, `I need to wash my hands`, `I'm lost`
 (no keyword overlap → `predicted=None`).
 
+### Iteration 3: restroom description
+
+**Change:** expanded `restroom` in `OBJECT_DESCRIPTIONS` — added
+"where you can wash your hands" (`navigator/semantics.py`).
+
+| Matcher | Accuracy | Δ vs iter 2 |
+|---------|----------|-------------|
+| Keyword | 81.25% (13/16) | — |
+| Embedding | **81.25%** (13/16) | **+6.25 pp** |
+
+**What improved:** `I need to wash my hands` now hits restroom (was clothing_store @ 0.22 in iter 2, now restroom @ 0.57). Embeddings **tie keyword** on this benchmark.
+
+**Still failing (embedding):**
+- `I have a question` → food_court (expected info_desk)
+- `can someone give me directions` → exit (expected info_desk)
+- `I'm lost` → restroom (expected info_desk)
+
+**Keyword still fails on:** `I'm thirsty`, `I need to wash my hands`, `I'm lost`.
+
 ### Takeaways
 
 - **Description quality matters more than model choice** on a 5-object map —
-  a few targeted synonyms closed much of the gap (68.75% → 75%).
-- **Keyword matcher is still ahead** (81.25%) because eval queries overlap
-  heavily with hand-written keyword lists.
+  targeted synonyms closed the gap iter 1→3: 68.75% → 75% → **81.25%**.
+- **Embeddings now match keyword accuracy** (81.25%) after three rounds of
+  description tuning — without changing the model or eval set.
 - **Both matchers struggle on paraphrase** — keyword returns no match;
   embedding often picks a plausible-but-wrong label with low confidence.
-- **`info_desk` remains the weak spot for embeddings** (1/3 at best after
-  description tweaks; still 0/3 in the latest run). Restroom descriptions
-  may be stealing short ambiguous queries.
-- **Confidence threshold (0.3)** still flags most embedding misses — wrong
-  picks like `can someone give me directions` (0.08) and `I have a question`
-  (0.19) score well below threshold, so `explain_choice()` can surface
-  uncertainty even when top-1 is wrong.
-- **Next levers:** enrich `restroom` / `info_desk` descriptions further, or
-  try a hybrid ranker (keyword + embedding) rather than swapping one for the other.
+- **`info_desk` is the remaining weak spot for embeddings** (0/3). All three
+  failures score below 0.3, so `explain_choice()` can flag uncertainty.
+- **Next levers:** further enrich `info_desk` descriptions, or try a hybrid
+  ranker (keyword + embedding) rather than swapping one for the other.

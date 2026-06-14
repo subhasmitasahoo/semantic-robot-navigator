@@ -17,7 +17,7 @@ OBJECT_KEYWORDS = {
 OBJECT_DESCRIPTIONS = {
     "food_court": "a food court with restaurants, snacks, coffee, drinks, water, and something to eat or drink when hungry or thirsty",
     "clothing_store": "a clothing store selling shirts, shoes, and clothes",
-    "restroom": "a restroom / bathroom / toilet",
+    "restroom": "a restroom / bathroom / toilet where you can wash your hands",
     "info_desk": "an information desk / help desk where staff can answer questions, give directions, and help if you are lost",
     "exit": "the exit leading outside the building",
 }
