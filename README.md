@@ -53,11 +53,29 @@ attempts.
 `navigator/main.py` — `navigate()` now uses `explain_choice()` to pick
 a target and reports confidence before planning/navigating.
 
+### Step 13: Eval set + matcher comparison (done)
+`navigator/eval.py` — 16 `(query, expected_label)` pairs; runs both
+`match_goal` (keyword) and `match_goal_embedding` and reports per-query
+results + accuracy.
+
 #### Try it
 ```bash
 python3 -m navigator.main
+python3 -m navigator.eval
 ```
 
-### What's next
-- **Eval set**: a list of `(query, expected_label)` pairs + a script that measures match accuracy — this is where your eval/ranking background really fits.
-Given your background, I'd guess **embeddings + eval set together** would be the most interesting next pair — replace the keyword matcher, then measure how much better (or differently-wrong) it is on a small benchmark. Want to go that direction, or pick something else?
+### Interesting analysis
+Full run saved in [`data/test/matcher_eval_results.txt`](data/test/matcher_eval_results.txt).
+
+On this 16-query benchmark, **keyword matching beat embeddings** (81.25% vs 68.75%) — counterintuitive at first, but the failures tell a clear story:
+
+| Matcher | Accuracy | Strengths | Weak spots |
+|---------|----------|-----------|------------|
+| Keyword | 81.25% | Exact word hits (`caffeine`, `toilet`, `shopping`) | Paraphrases with no keyword overlap (`I'm thirsty`, `wash my hands`, `I'm lost`) → no match |
+| Embedding | 68.75% | Strong on clear intent (`where can I get food` 0.50, `where's the toilet` 0.73) | Short/vague queries drift to wrong labels (`I'm thirsty` → restroom, `I'm lost` → restroom); `info_desk` is especially weak (0/3) |
+
+Takeaways:
+- **Hand-tuned keywords win on a tiny mall map** because the eval queries overlap heavily with the keyword lists we wrote — embeddings generalize in theory but lose here without richer object descriptions.
+- **Both matchers fail on paraphrase** — keyword returns `None`, embedding often picks a plausible-but-wrong label with low confidence.
+- **Confidence threshold (0.3) would flag most embedding misses** — several wrong picks score below 0.3, so `explain_choice()` can surface uncertainty even when top-1 is wrong.
+- **Next lever**: richer `OBJECT_DESCRIPTIONS` (synonyms, use-cases) or a hybrid ranker (keyword + embedding) rather than swapping one for the other.
