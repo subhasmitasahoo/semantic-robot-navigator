@@ -1,3 +1,24 @@
+# Semantic Robot Navigator
+
+A simulated 2D indoor robot that follows natural-language goals like
+"I need caffeine" or "I'm lost" by combining classic robotics (mapping,
+A* planning, navigation, re-planning around dynamic obstacles) with a
+semantic layer (embedding-based intent matching, confidence, eval).
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+```
+
+Run modules from the project root:
+
+```bash
+python3 -m navigator.visualize   # view the map
+python3 -m navigator.main        # end-to-end demo: goal -> plan -> navigate
+python3 -m navigator.eval        # semantic matcher benchmark
+```
+
 ## Progress
 
 ### Step 1: Grid Map (done)
