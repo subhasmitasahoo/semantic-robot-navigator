@@ -26,32 +26,79 @@ python3 -m navigator.eval        # semantic matcher benchmark
 objects placed at (x, y) coordinates. Includes `neighbors()` for
 4-connected walkable cells.
 
+**What this means:** the "world" is just a grid of squares. Each square
+is either empty (the robot can stand there) or a wall (it can't). Some
+empty squares also have a label, like `coffee_machine` or `exit`, so we
+know where things are. `x` = column (left/right), `y` = row (top/bottom,
+counting down from the top). `neighbors()` looks at the square above,
+below, left, and right of a given square, and returns only the ones that
+are walkable — this is the basic building block everything else uses to
+move around.
+
 ### Step 2: Example World (done)
 `navigator/world.py` — `build_mall_world()`: 20x12 grid, mall-themed
 rooms with doorways, labeled objects (`food_court`, `clothing_store`,
 `restroom`, `info_desk`, `exit`).
+
+**What this means:** a concrete example map — a small mall floor split
+into a few rooms by walls, with gaps in the walls acting as doorways
+between rooms. A handful of useful places (`food_court`, `restroom`,
+etc.) are placed inside it. This is the map every later step runs on.
 
 ### Step 3: Visualization (done)
 `navigator/visualize.py` — `plot_map()` renders the grid + objects +
 optional path/robot marker. `animate_path()` animates the robot
 stepping along a path.
 
+**What this means:** turns the grid of numbers into a picture you can
+actually look at — black squares for walls, white for open floor, blue
+dots with labels for places like `restroom`. `animate_path()` additionally
+draws a green square that visibly moves step by step along a route, so
+you can watch the robot "walk".
+
 ### Step 4: A* Path Planning (done)
 `navigator/planner.py` — `astar()` finds the shortest path between two
 cells using Manhattan-distance heuristic. Returns `None` if no path
 exists (e.g. disconnected rooms).
 
+**What this means:** given a start square and a goal square, `astar()`
+works out the shortest route between them, going only through walkable
+squares. It's smart about *which* routes to try first — it estimates
+"how far away is the goal in a straight line" and prioritizes routes
+that seem to be heading the right direction, so it doesn't waste time
+exploring obviously-wrong directions. If the goal is in a part of the
+map that's completely walled off with no doorway, it correctly reports
+"no path exists" instead of guessing.
+
 ### Step 5-6: Path drawing + animation (done)
 Path is drawn on the map and the robot animates along it cell by cell.
+
+**What this means:** combining Steps 3 and 4 — once `astar()` works out
+a route, we draw it as a red line on the map and animate the green robot
+square walking along it, square by square.
 
 ### Step 7: Natural-language goal matching (done)
 `navigator/semantics.py` — keyword-based `match_goal()`. See
 [Semantic Matching](docs/semantic-matching.md) for full details.
 
+**What this means:** this is the first step toward understanding plain
+English. Each place on the map (e.g. `food_court`) has a list of words
+people might say when they want it (e.g. "coffee", "hungry", "snack").
+`match_goal()` takes what the user typed, splits it into words, and
+checks how many of those words overlap with each place's word list —
+the place with the most overlap "wins". Simple, but only works if the
+user happens to use one of the exact listed words.
+
 ### Step 8: End-to-end demo (done)
 `navigator/main.py` — `navigate(m, start, query)`: ranks targets,
 plans a path to the best *reachable* match, falling back to the next
 match if unreachable, then animates the result.
+
+**What this means:** the first version that ties everything together —
+type a sentence, the system picks the best-matching place, checks A* can
+actually get there, plans the route, and animates the robot walking to
+it. If the top choice turns out to be unreachable, it tries the
+next-best match instead of just giving up.
 
 ### Step 9-10: Dynamic obstacles, re-planning, and waiting (done)
 `navigator/main.py` — `navigate()` now steps the robot one cell at a
@@ -61,10 +108,32 @@ and disappear after a few steps. If A* returns no path, the robot
 waits in place and retries, giving up only after `max_wait` failed
 attempts.
 
+**What this means:** real environments change while you're moving
+through them — someone might step into a doorway you were about to use.
+Instead of planning one route at the start and blindly following it, the
+robot now re-plans *every single step*, using the map as it currently is.
+If a new obstacle blocks the only way through, A* will (correctly) say
+"no path" — so the robot waits a few steps (maybe the obstacle moves
+away) before giving up entirely.
+
 ### Step 11-13: Embeddings, confidence, and eval (done)
 Embedding-based matching (`match_goal_embedding`), confidence reporting
 (`explain_choice`), and a 16-query benchmark (`navigator/eval.py`).
 Richer object descriptions improved embedding accuracy from 68.75% → 100% (see [iterations](docs/semantic-matching.md#interesting-analysis)).
+
+**What this means:** this replaces the "exact word match" approach from
+Step 7 with something that understands *meaning*. Each place gets a
+short description (e.g. "a restroom / bathroom / toilet"), and a
+pretrained language model turns both the user's sentence and each
+description into a list of numbers ("embeddings") that capture meaning.
+Sentences that mean similar things end up with similar numbers, so
+"where's the toilet" can match `restroom` even though the word "toilet"
+never appears in its description. `explain_choice()` also reports a
+confidence score, and tells you honestly when it's "not very confident".
+The 16-question benchmark (`eval.py`) is how we measured and improved
+this — checking, for a fixed set of test sentences, whether the system
+picks the *expected* place, and iterating on the descriptions until it
+reached 100%.
 
 → **[Semantic Matching — full write-up + analysis](docs/semantic-matching.md)**
 
@@ -73,6 +142,10 @@ Richer object descriptions improved embedding accuracy from 68.75% → 100% (see
 rendered below the map. `navigator/main.py` builds this subtitle from
 `explain_choice()`'s output: chosen target, its description, and the
 confidence score (flagged as "confident" or "low-confidence guess").
+
+**What this means:** the animation now shows *why* the robot is going
+where it's going — a caption under the map saying which place it picked,
+what that place is, and how confident the system was about that choice.
 
 #### Try it
 ```bash
