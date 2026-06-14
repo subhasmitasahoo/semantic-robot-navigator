@@ -79,3 +79,10 @@ confidence score (flagged as "confident" or "low-confidence guess").
 python3 -m navigator.main
 python3 -m navigator.eval
 ```
+
+## Next stage: Reinforcement Learning (in progress)
+
+The `rl/` package will hold a reinforcement-learning track: train an
+agent to navigate `GridMap` worlds (starting with `build_mall_world()`),
+and compare it against the A* planner on success rate and path
+efficiency. Built step by step.
