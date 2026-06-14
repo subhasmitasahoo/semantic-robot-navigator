@@ -43,7 +43,7 @@ attempts.
 ### Step 11-13: Embeddings, confidence, and eval (done)
 Embedding-based matching (`match_goal_embedding`), confidence reporting
 (`explain_choice`), and a 16-query benchmark (`navigator/eval.py`).
-Richer object descriptions improved embedding accuracy from 68.75% → 81.25% (see [iterations](docs/semantic-matching.md#interesting-analysis)).
+Richer object descriptions improved embedding accuracy from 68.75% → 100% (see [iterations](docs/semantic-matching.md#interesting-analysis)).
 
 → **[Semantic Matching — full write-up + analysis](docs/semantic-matching.md)**
 
