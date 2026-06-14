@@ -120,7 +120,7 @@ Keyword matching won on this tiny benchmark. Embedding failures included
 
 ### Iteration 4: query-shaped info_desk description
 
-**Change:** rewrote `info_desk` in `OBJECT_DESCRIPTIONS` to mirror eval
+**Change:** [commit a651fae](https://github.com/subhasmitasahoo/semantic-robot-navigator/commit/a651fae) — rewrote `info_desk` in `OBJECT_DESCRIPTIONS` to mirror eval
 query phrasing instead of a formal location description.
 
 | Object | Before | After |
