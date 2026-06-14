@@ -10,10 +10,15 @@ class GridMap:
     height: int
     grid: List[List[int]]
     objects: Dict[str, Tuple[int, int]]
+    dynamic_obstacles: set = None
 
     @classmethod
     def empty(cls, width: int, height: int) -> "GridMap":
         return cls(width, height, [[0] * width for _ in range(height)], {})
+
+    def __post_init__(self):
+        if self.dynamic_obstacles is None:
+            self.dynamic_obstacles = set()
 
     def set_obstacle(self, x:int, y:int) -> None:
         self.grid[y][x] = 1
@@ -23,6 +28,8 @@ class GridMap:
     
     def is_free(self, x:int, y:int) -> bool:
         if not (0 <= x < self.width and 0 <= y < self.height):
+            return False
+        if (x, y) in self.dynamic_obstacles:
             return False
         return self.grid[y][x] == 0
     

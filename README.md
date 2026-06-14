@@ -33,7 +33,22 @@ overlap with a natural-language query (e.g. "I need caffeine" ->
 plans a path to the best *reachable* match, falling back to the next
 match if unreachable, then animates the result.
 
+### Step 9-10: Dynamic obstacles, re-planning, and waiting (done)
+`navigator/main.py` — `navigate()` now steps the robot one cell at a
+time, re-running A* from its current position every step. A temporary
+obstacle can appear mid-route (simulating a person blocking a doorway)
+and disappear after a few steps. If A* returns no path, the robot
+waits in place and retries, giving up only after `max_wait` failed
+attempts.
+
 #### Try it
 ```bash
-pip install -r requirements.txt
 python3 -m navigator.main
+```
+
+### What's next
+We've now covered the core robotics loop: map -> plan -> navigate -> detect change -> replan/wait -> recover. The remaining items from the original idea are mostly on the **semantic** side:
+- **Embeddings** (`sentence-transformers`): replace hand-written `OBJECT_KEYWORDS` with real semantic similarity — handles queries like "I'm thirsty" or "somewhere quiet to sit" without manual keyword lists.
+- **Confidence/explanation**: surface *why* a target was picked ("chose restroom — matched 'bathroom', score 0.20").
+- **Eval set**: a list of `(query, expected_label)` pairs + a script that measures match accuracy — this is where your eval/ranking background really fits.
+Given your background, I'd guess **embeddings + eval set together** would be the most interesting next pair — replace the keyword matcher, then measure how much better (or differently-wrong) it is on a small benchmark. Want to go that direction, or pick something else?
