@@ -97,8 +97,11 @@ Keyword matching won on this tiny benchmark. Embedding failures included
 
 ### Iteration 3: restroom description
 
-**Change:** expanded `restroom` in `OBJECT_DESCRIPTIONS` — added
-"where you can wash your hands" (`navigator/semantics.py`).
+**Change:** [commit 9f37360](https://github.com/subhasmitasahoo/semantic-robot-navigator/commit/9f37360) — expanded `restroom` in `OBJECT_DESCRIPTIONS`:
+
+| Object | Before | After |
+|--------|--------|-------|
+| `restroom` | "a restroom / bathroom / toilet" | added "where you can wash your hands" |
 
 | Matcher | Accuracy | Δ vs iter 2 |
 |---------|----------|-------------|
