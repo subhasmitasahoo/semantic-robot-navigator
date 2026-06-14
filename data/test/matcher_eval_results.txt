@@ -21,10 +21,10 @@ python3 -m navigator.eval
 Keyword matcher accuracy: 13/16 = 81.25%
 
 --- Embedding matcher ---
-[OK ] 'I need caffeine' -> predicted=food_court (score=0.25), expected=food_court
-[OK ] 'where can I get food' -> predicted=food_court (score=0.50), expected=food_court
-[OK ] 'I'm hungry' -> predicted=food_court (score=0.25), expected=food_court
-[FAIL] 'I'm thirsty' -> predicted=restroom (score=0.14), expected=food_court
+[OK ] 'I need caffeine' -> predicted=food_court (score=0.27), expected=food_court
+[OK ] 'where can I get food' -> predicted=food_court (score=0.49), expected=food_court
+[OK ] 'I'm hungry' -> predicted=food_court (score=0.36), expected=food_court
+[OK ] 'I'm thirsty' -> predicted=food_court (score=0.26), expected=food_court
 [OK ] 'where can I buy a shirt' -> predicted=clothing_store (score=0.62), expected=clothing_store
 [OK ] 'I need new shoes' -> predicted=clothing_store (score=0.38), expected=clothing_store
 [OK ] 'I want to go shopping' -> predicted=clothing_store (score=0.51), expected=clothing_store
@@ -38,8 +38,8 @@ Keyword matcher accuracy: 13/16 = 81.25%
 [OK ] 'how do I get outside' -> predicted=exit (score=0.47), expected=exit
 [OK ] 'where's the way out' -> predicted=exit (score=0.40), expected=exit
 
-Embedding matcher accuracy: 11/16 = 68.75%
+Embedding matcher accuracy: 12/16 = 75.00%
 
 === Summary ===
 Keyword:   81.25%
-Embedding: 68.75%
+Embedding: 75.00%

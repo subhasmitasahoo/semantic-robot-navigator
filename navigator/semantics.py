@@ -1,8 +1,8 @@
 """Maps natural-language goals to target objects/locations using simple
 keyword overlap scoring. No ML required for this first version."""
 
-from navigator.world import build_mall_world
 from sentence_transformers import SentenceTransformer, util
+
 from navigator.world import build_mall_world
 
 # label -> set of keywords/phrases associated with it
@@ -15,10 +15,10 @@ OBJECT_KEYWORDS = {
 }
 
 OBJECT_DESCRIPTIONS = {
-    "food_court": "a food court with restaurants, snacks, coffee, and drinks",
+    "food_court": "a food court with restaurants, snacks, coffee, drinks, water, and something to eat or drink when hungry or thirsty",
     "clothing_store": "a clothing store selling shirts, shoes, and clothes",
     "restroom": "a restroom / bathroom / toilet",
-    "info_desk": "an information desk where staff can help with directions",
+    "info_desk": "an information desk / help desk where staff can answer questions, give directions, and help if you are lost",
     "exit": "the exit leading outside the building",
 }
 
